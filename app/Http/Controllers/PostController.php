@@ -18,11 +18,12 @@ class PostController extends Controller
 
         $posts = Post::select('posts.*', 'users.name as user_name')
         ->join('users', 'posts.user_id', '=', 'users.id')
+        ->where('posts.estado', 'activo') // Agrega esta condición para filtrar los posts activos
         ->orderBy('posts.created_at', 'desc')
         ->get();
-    
 
-          return view('dashboard', ['posts' => $posts]);
+    return view('dashboard', ['posts' => $posts]);
+
     }
 
     /**
@@ -110,5 +111,40 @@ class PostController extends Controller
 
     // Si el post no tiene imagen, devuelve una imagen de marcador de posición o un mensaje de error
     // ...
+
+    
 }
+
+public function misPosts()
+{
+    // Recupera solo los posts del usuario actualmente autenticado
+    // $user = auth()->user();
+    // $posts = $user->posts()->orderBy('created_at', 'desc')->get();
+
+     // Recupera solo los posts del usuario actualmente autenticado con el nombre del usuario
+     $userId = auth()->id();
+     $posts = Post::join('users', 'posts.user_id', '=', 'users.id')
+                   ->where('posts.user_id', $userId)
+                   ->orderBy('posts.created_at', 'desc')
+                   ->select('posts.*', 'users.name as user_name')
+                   ->get();
+ 
+    // Retorna la vista con los posts del usuario
+    return view('posts.mis-posts', compact('posts'));
+}
+
+public function inactivar(Post $post)
+    {
+        $post->estado = 'Inactivo';
+        $post->save();
+        return redirect()->route('dashboard')->with('success', 'Post inactivado correctamente.');
+    }
+
+    public function activar(Post $post)
+    {
+        $post->estado = 'Activo';
+        $post->save();
+        return redirect()->route('dashboard')->with('success', 'Post activado correctamente.');
+    }
+
 }

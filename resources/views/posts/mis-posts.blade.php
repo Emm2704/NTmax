@@ -60,34 +60,44 @@
         <p style="margin-top: 2%">
             <!-- Botón para Me gusta -->
             <button class="icon-button d-inline-block" onclick="mostrarAlerta()" style="width: auto; height: auto; padding: 0; border: none; background: none; margin-right:12px; margin-left:8%;">
-                <img src="{{ asset('src/like.png') }}" style="width: 30px; height: 30px; float: left; margin-right: 10px;" alt="">
+                <img src="{{ asset('src/like.png') }}" style="width: 15px; height: 15px; float: left; margin-right: 10px;" alt="">
                 <span style="display: inline-block;">Me gusta</span>
             </button>
                     
 
             <!-- Botón para Copmentar -->
             <button class="icon-button d-inline-block" style="width: auto; height: auto; padding: 0; border: none; background: none; margin-right:12px;">
-                <img src="{{ asset('src/coment.png') }}" style="width: 30px; height: 30px; float: left; margin-right: 10px;" alt="">
+                <img src="{{ asset('src/coment.png') }}" style="width: 15px; height: 15px; float: left; margin-right: 10px;" alt="">
                 <span style="display: inline-block;">Comentar</span>
             </button>
             
             <!-- Botón para Guardar -->
             <button class="icon-button d-inline-block" onclick="confirmarGuardar()" style="width: auto; height: auto; padding: 0; border: none; background: none; margin-right:12px;">
-                <img src="{{ asset('src/marcador.png') }}" style="width: 30px; height: 30px; float: left; margin-right: 10px;" alt="">
+                <img src="{{ asset('src/marcador.png') }}" style="width: 15px; height: 15px; float: left; margin-right: 10px;" alt="">
                 <span style="display: inline-block;">Guardar</span>
             </button>
             
             <!-- Botón para compartir -->
             <button class="icon-button d-inline-block" onclick="mostrarCompartir()" style="width: auto; height: auto; padding: 0; border: none; background: none; margin-right:12px;">
-                <img src="{{ asset('src/share.png') }}" style="width: 30px; height: 30px; float: left; margin-right: 10px;" alt="">
+                <img src="{{ asset('src/share.png') }}" style="width: 15px; height: 15px; float: left; margin-right: 10px;" alt="">
                 <span style="display: inline-block;">Compartir</span>
             </button>
             
-            <!-- Botón para Ocultar -->
-            {{-- <button class="icon-button d-inline-block" onclick="confirmarOcultar('{{ $post->id }}')" style="width: auto; height: auto; padding: 0; border: none; background: none; margin-right:12px;">
-                <img src="{{ asset('src/hide.png') }}" style="width: 30px; height: 30px; float: left; margin-right: 10px;" alt="">
-                <span style="display: inline-block;">Ocultar publicación</span>
-            </button>             --}}
+            <!-- Botón para ocultar -->
+            
+            @if ($post->estado == 'Activo')
+            <form action="{{ route('posts.inactivar', ['post' => $post->id]) }}" method='POST' style="display:inline-block">
+                @method('put')
+                @csrf
+                <button style="margin-left: 40%" class="btn btn-dark" type="submit" onclick="return confirm('¿Estás seguro de inactivar este usuario?')">Inactivar</button>
+            </form>
+        @else
+            <form action="{{ route('posts.activar', ['post' => $post->id]) }}" method='POST' style="display:inline-block">
+                @method('put')
+                @csrf
+                <button style="margin-left: 40%" class="btn btn-dark" type="submit" onclick="return confirm('¿Estás seguro de activar este usuario?')">Activar</button>
+            </form>
+        @endif
             
         </p>
     </div>

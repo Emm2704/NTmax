@@ -29,3 +29,13 @@ Route::get('/dashboard', [PostController::class, 'index'])
 
     //ver imagen
     Route::get('/posts/{id}/image', [PostController::class, 'showImage'])->name('posts.image.show');
+
+    //mis posts
+
+    Route::get('/mis-posts', [PostController::class, 'misPosts'])
+    ->middleware(['auth', 'verified'])
+    ->name('posts.mis-posts');
+
+    Route::put('/mis-posts/{post}/inactivar', [PostController::class, 'inactivar'])->name('posts.inactivar');
+    Route::put('/mis-posts/{post}/activar', [PostController::class, 'activar'])->name('posts.activar');
+
