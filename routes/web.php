@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\MenuController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -39,3 +41,13 @@ Route::get('/dashboard', [PostController::class, 'index'])
     Route::put('/mis-posts/{post}/inactivar', [PostController::class, 'inactivar'])->name('posts.inactivar');
     Route::put('/mis-posts/{post}/activar', [PostController::class, 'activar'])->name('posts.activar');
 
+    // user Routes
+
+    Route::resource('usuarios', UserController::class)->middleware(['auth', 'verified']);
+    
+    Route::put('/usuarios{usuario}', [UserController::class, 'inactivar']) -> name('usuarios.inactivar');
+    Route::put('/usuarios/{usuario}/activar', [UserController::class, 'activar'])->name('usuarios.activar');
+    
+    
+    //Menu routes
+    Route::get('menu', [MenuController::class, 'index'])->name('menu.index');

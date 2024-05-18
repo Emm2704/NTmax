@@ -29,6 +29,17 @@
                         {{ __('Mis Posts') }}
                     </x-nav-link>
                 </div>
+
+                @auth
+            @if(auth()->user()->role === 'admin')
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('menu.index')">
+                        {{ __('Menú') }}
+                    </x-nav-link>
+                </div>
+            @endif
+            @endauth
+
                 
             </div>
 

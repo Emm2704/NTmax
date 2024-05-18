@@ -93,7 +93,16 @@ class PostController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $post = Post::find($id);
+        $post->delete();
+
+        $posts = Post::select('posts.*', 'users.name as user_name')
+        ->join('users', 'posts.user_id', '=', 'users.id')
+        ->where('posts.estado', 'activo') // Agrega esta condición para filtrar los posts activos
+        ->orderBy('posts.created_at', 'desc')
+        ->get();
+
+    return view('dashboard', ['posts' => $posts]);
     }
 
     public function showImage($id)

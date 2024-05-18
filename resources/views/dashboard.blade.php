@@ -1,6 +1,8 @@
 <x-app-layout>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-SL25GAkCz06bDADKmMv3UjiAHJzrmcN7k1WyCmSRj5R2EMZZBo1p7voikd0jJzG3" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
     <div class="container">
         <x-slot name="header">
             <div class="flex items-center">
@@ -11,100 +13,84 @@
                     {{ __('Cuentanos que sientes 😊') }}
                 </h2>
             </div>
-            
         </x-slot>
         
-
-        {{-- <div class="row">
-            @foreach ($posts as $post)
-                <div class="col-md-4 mb-3">
-                    <div class="card">
-                        @if ($post->image)
-                        <img src="{{ asset('storage/' . $post->image) }}" class="card-img-top" alt="Post Image">
-                        @endif
-                        <div class="card-body">
-                            <h5 class="card-title">{{ $post->description }}</h5>
-                            <p class="card-text">Publicado hace {{ $post->created_at->diffForHumans() }}</p>
-                        </div>
-                    </div>
+        @foreach ($posts as $post)
+        <div class="card mb-3" style="
+            border-top-left-radius: 50px;
+            border-top-right-radius: 50px;
+            max-height: auto;
+            max-width: 600px;
+            margin: auto;
+            overflow: hidden;
+            ">
+            @if ($post->image)
+                <div style="position: relative; width: 100%; max-width: 600px;">
+                    <img src="{{ asset('storage/' . $post->image) }}" class="card-img-top" alt="Post Image" style="width: 100%; height: auto;">
+                    <div style="position: absolute; top: 0px; right: 0px; background-color: rgba(39, 186, 195, 255); padding: 10px 60px; border-top-left-radius: 0px; border-bottom-left-radius: 50px;">
+                        <h5 style="color: white; margin: 0; font-size: 18px;">{{ $post->user_name }}</h5>
+                    </div>                
                 </div>
-            @endforeach
-        </div>
-    </div> --}}
-    @foreach ($posts as $post)
-    <div class="card mb-3" style="
-        border-top-left-radius: 50px;
-        border-top-right-radius: 50px;
-        max-height: auto;
-        max-width: 600px; /* Ancho máximo del contenedor de la tarjeta */
-        margin: auto; /* Centra la tarjeta */
-        overflow: hidden; /* Oculta cualquier contenido que se salga de los bordes */
-        ">
-        @if ($post->image)
-            <div style="position: relative; width: 100%; max-width: 600px;"> <!-- Ancho máximo del contenedor de la imagen -->
-                <img src="{{ asset('storage/' . $post->image) }}" class="card-img-top" alt="Post Image" style="width: 100%; height: auto;">
-                <div style="position: absolute; top: 0px; right: 0px; background-color: rgba(39, 186, 195, 255); padding: 10px 60px; border-top-left-radius: 0px; border-bottom-left-radius: 50px;">
-                    <h5 style="color: white; margin: 0; font-size: 18px;">{{ $post->user_name }}</h5>
-                </div>                
+            @endif
+            <div class="card-body" style="background-color: rgba(39, 186, 195, 255);">
+                <p class="card-text">{{ $post->description }}</p>
+                <p class="card-text"><small class="text-muted">Publicado hace {{ $post->created_at->diffForHumans() }}</small></p>
             </div>
-        @endif
-        <div class="card-body" style="background-color: rgba(39, 186, 195, 255);">
-            <p class="card-text">{{ $post->description }}</p>
-            <p class="card-text"><small class="text-muted">Publicado hace {{ $post->created_at->diffForHumans() }}</small></p>
         </div>
-    </div>
-    <div class="card mb-3" style="margin: auto; max-width: 600px;
-        background-color: rgba(39, 186, 195, 255);
-        border-bottom-left-radius: 50px;
-        border-bottom-right-radius: 50px;">
-        <p style="margin-top: 2%">
-            <!-- Botón para Me gusta -->
-            <button class="icon-button d-inline-block" onclick="mostrarAlerta()" style="width: auto; height: auto; padding: 0; border: none; background: none; margin-right:12px; margin-left:8%;">
-                <img src="{{ asset('src/like.png') }}" style="width: 30px; height: 30px; float: left; margin-right: 10px;" alt="">
-                <span style="display: inline-block;">Me gusta</span>
-            </button>
-                    
+        <div class="card mb-3" style="margin: auto; max-width: 600px;
+            background-color: rgba(39, 186, 195, 255);
+            border-bottom-left-radius: 50px;
+            border-bottom-right-radius: 50px;">
+            <p style="margin-top: 2%">
+                <!-- Botón para Me gusta -->
+                <button class="icon-button d-inline-block" onclick="mostrarAlerta()" style="width: auto; height: auto; padding: 0; border: none; background: none; margin-right:12px; margin-left:8%;">
+                    <img src="{{ asset('src/like.png') }}" style="width: 30px; height: 30px; float: left; margin-right: 10px;" alt="">
+                    <span style="display: inline-block;">Me gusta</span>
+                </button>
 
-            <!-- Botón para Copmentar -->
-            <button class="icon-button d-inline-block" style="width: auto; height: auto; padding: 0; border: none; background: none; margin-right:12px;">
-                <img src="{{ asset('src/coment.png') }}" style="width: 30px; height: 30px; float: left; margin-right: 10px;" alt="">
-                <span style="display: inline-block;">Comentar</span>
-            </button>
-            
-            <!-- Botón para Guardar -->
-            <button class="icon-button d-inline-block" onclick="confirmarGuardar()" style="width: auto; height: auto; padding: 0; border: none; background: none; margin-right:12px;">
-                <img src="{{ asset('src/marcador.png') }}" style="width: 30px; height: 30px; float: left; margin-right: 10px;" alt="">
-                <span style="display: inline-block;">Guardar</span>
-            </button>
-            
-            <!-- Botón para compartir -->
-            <button class="icon-button d-inline-block" onclick="mostrarCompartir()" style="width: auto; height: auto; padding: 0; border: none; background: none; margin-right:12px;">
-                <img src="{{ asset('src/share.png') }}" style="width: 30px; height: 30px; float: left; margin-right: 10px;" alt="">
-                <span style="display: inline-block;">Compartir</span>
-            </button>
-            
-            <!-- Botón para Ocultar -->
-            {{-- <button class="icon-button d-inline-block" onclick="confirmarOcultar('{{ $post->id }}')" style="width: auto; height: auto; padding: 0; border: none; background: none; margin-right:12px;">
-                <img src="{{ asset('src/hide.png') }}" style="width: 30px; height: 30px; float: left; margin-right: 10px;" alt="">
-                <span style="display: inline-block;">Ocultar publicación</span>
-            </button>             --}}
-            
-        </p>
-    </div>
-    
-    
-    
-    <!-- Botón para Comentar -->
-    {{-- <a class="icon-button" style="display: inline-block;">
-        <img src="{{ asset('src/marcador.png') }}" style="width: 6%; margin-left: 10px;" alt="">
-    </a>
-    <!-- Botón para Compartir -->
-    <a class="icon-button" style="display: inline-block;">
-        <img src="{{ asset('src/share.png') }}" style="width: 6%; margin-left: 10px;" alt="">
-    </a> --}}
-{{-- </div> --}}
+                <!-- Botón para Comentar -->
+                <button class="icon-button d-inline-block" style="width: auto; height: auto; padding: 0; border: none; background: none; margin-right:12px;">
+                    <img src="{{ asset('src/coment.png') }}" style="width: 30px; height: 30px; float: left; margin-right: 10px;" alt="">
+                    <span style="display: inline-block;">Comentar</span>
+                </button>
 
-@endforeach
+                <!-- Botón para Guardar -->
+                <button class="icon-button d-inline-block" onclick="confirmarGuardar()" style="width: auto; height: auto; padding: 0; border: none; background: none; margin-right:12px;">
+                    <img src="{{ asset('src/marcador.png') }}" style="width: 30px; height: 30px; float: left; margin-right: 10px;" alt="">
+                    <span style="display: inline-block;">Guardar</span>
+                </button>
+
+                <!-- Botón para compartir -->
+                <button class="icon-button d-inline-block" onclick="mostrarCompartir()" style="width: auto; height: auto; padding: 0; border: none; background: none; margin-right:12px;">
+                    <img src="{{ asset('src/share.png') }}" style="width: 30px; height: 30px; float: left; margin-right: 10px;" alt="">
+                    <span style="display: inline-block;">Compartir</span>
+                </button>
+                @if (Auth::user()->role == 'admin')
+                <div style="display: inline-block;">
+                    <!-- Formulario para eliminar la publicación -->
+                    <form action="{{ route('posts.destroy', $post->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar esta publicación?');">
+                        @csrf
+                        @method('DELETE')
+                        <button class="icon-button d-inline-block" style="width: auto; height: auto; padding: 0; border: none; background: none; margin-right:12px;">
+                            <img src="{{ asset('src/delete.png') }}" style="width: 30px; height: 30px; float: left; margin-right: 10px;" alt="">
+                            <span style="display: inline-block;">Eliminar</span>
+                        </button>
+                    </form>
+                    <!-- Formulario para ocultar la publicación -->
+                    <form action="{{ route('posts.inactivar', ['post' => $post->id]) }}" method='POST' style="display:inline-block">
+                        @method('put')
+                        @csrf
+                        <button class="icon-button d-inline-block" style="width: auto; height: auto; padding: 0; border: none; background: none; margin-right:12px;">
+                            <img src="{{ asset('src/hide.png') }}" style="width: 30px; height: 30px; float: left; margin-right: 10px;" alt="">
+                            <span style="display: inline-block;">Ocultar</span>
+                        </button>
+                    </form>
+                </div>
+                @endif
+            </p>
+        </div>
+        @endforeach
+    </div>
 </x-app-layout>
 
 <script>
@@ -116,9 +102,7 @@
             timer: 1500
         });
     }
-</script>
 
-<script>
     function confirmarGuardar() {
         Swal.fire({
             title: '¿Estás seguro?',
@@ -131,7 +115,6 @@
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
-                // Aquí puedes realizar cualquier acción necesaria para guardar el post
                 Swal.fire(
                     '¡Guardado!',
                     'Tu post ha sido guardado correctamente.',
@@ -140,9 +123,7 @@
             }
         });
     }
-</script>
 
-<script>
     function mostrarCompartir() {
         Swal.fire({
             title: 'Compartir en redes sociales',
@@ -188,18 +169,11 @@
             'success'
         );
     }
-</script>
-<script>
-    // Función para ocultar la publicación desde la vista
+
     function ocultarPublicacion(postId) {
-        // Selecciona el elemento HTML de la publicación por su ID
         var publicacion = document.getElementById('publicacion-' + postId);
-        
-        // Oculta el elemento de la publicación
         if (publicacion) {
             publicacion.style.display = 'none';
-            // O puedes usar la siguiente línea si prefieres eliminar el elemento completamente
-            // publicacion.remove();
         }
     }
 </script>
