@@ -37,25 +37,31 @@
         <!-- Password -->
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />
-            <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
-            <span id="password-strength"></span>
+            <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" oninput="validatePasswordStrength()" />
+            <div class="password-strength mt-2">
+                <span id="strength-message"></span>
+                <div class="strength-bar mt-1 w-full">
+                    <span id="strength-level" style="display: block; height: 5px; border-radius: 5px;"></span>
+                </div>
+            </div>
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
         <!-- Confirm Password -->
         <div class="mt-4">
             <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-            <x-text-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" required autocomplete="new-password" />
+            <x-text-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" required autocomplete="new-password" oninput="validatePasswordMatch()" />
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
             <span id="password-match" class="text-red-500 hidden">Las contraseñas no coinciden.</span>
         </div>
 
-        <!-- Check  -->
+        <!-- Terms and Conditions -->
         <div class="mt-4">
-            <input class="form-check-input" type="checkbox" id="gridCheck">
-            <label class="form-check-label" for="gridCheck">
-                Acepto los términos y condiciones.
+            <input class="form-check-input" type="checkbox" id="terms" />
+            <label class="form-check-label" for="terms">
+                Acepto los términos y condiciones.<a href="javascript:void(0)" onclick="openTermsModal()" style="color: #00c0d7;">Leer</a>.
             </label>
+            <span id="terms-error" class="text-red-500 hidden">Debes aceptar los términos y condiciones.</span>
         </div>
 
         <!-- Submit Button -->
@@ -69,6 +75,23 @@
         </div>
     </form>
 
+    <!-- Terms Modal -->
+    <div id="terms-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center;">
+        <div style="background:#fff; padding:20px; border-radius:10px; width:80%; max-height:80%; overflow-y:auto;">
+            <h2>Términos y Condiciones</h2>
+            <p>Bienvenido/a a nuestra aplicación móvil dedicada al estudio y comprensión de la neurodivergencia. Antes de utilizar nuestra app, le solicitamos que lea detenidamente los siguientes términos y condiciones que rigen su acceso y participación en nuestra comunidad. Al hacer uso de nuestra aplicación, usted acepta expresamente los términos y condiciones que se detallan a continuación:</p>
+            <p>1. Al descargar, instalar y utilizar nuestra aplicación, usted acepta cumplir con estos términos y condiciones.</p>
+            <p>2. Nos comprometemos a respetar y proteger su privacidad de acuerdo con las leyes y regulaciones aplicables. Consulte nuestra Política de Privacidad para obtener más información detallada sobre cómo manejamos sus datos personales.</p>
+            <p>3. Nos reservamos el derecho de modificar estos términos y condiciones en cualquier momento. Las modificaciones entrarán en vigencia tan pronto como se publiquen dentro de la aplicación. Se recomienda revisar periódicamente los términos para estar informado sobre posibles cambios.</p>
+            <p>4. El usuario es responsable de la información que comparte y de su conducta en nuestra aplicación. Cualquier actividad que viole los términos y condiciones puede resultar en la terminación de su cuenta.</p>
+            <p>5. El contenido proporcionado en nuestra aplicación está protegido por derechos de autor de acuerdo con la Ley 1915 de 2018 y otras disposiciones legales. Se prohíbe la reproducción no autorizada del contenido.</p>
+            <p>6. Nos comprometemos a preservar la integridad y seguridad de la información que comparte en nuestra aplicación. Seguimos las disposiciones de la Ley 1273 de 2009 para proteger la información y los datos.</p>
+            <div style="display: flex; justify-content: center; margin-top: 20px;">
+                <button class="button" onclick="closeTermsModal()" style="background-color: #00c0d7; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer;">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const nameInput = document.getElementById('name');
         const emailInput = document.getElementById('email');
@@ -76,11 +99,15 @@
         const dobInput = document.getElementById('dob');
         const passwordInput = document.getElementById('password');
         const confirmPasswordInput = document.getElementById('password_confirmation');
+        const termsCheckbox = document.getElementById('terms');
         const nameError = document.getElementById('name-error');
         const emailError = document.getElementById('email-error');
         const phoneError = document.getElementById('phone-error');
         const dobError = document.getElementById('dob-error');
+        const termsError = document.getElementById('terms-error');
         const matchMessage = document.getElementById('password-match');
+        const strengthLevel = document.getElementById('strength-level');
+        const strengthMessage = document.getElementById('strength-message');
         const registerBtn = document.getElementById('register-btn');
 
         nameInput.addEventListener('input', validateName);
@@ -89,6 +116,7 @@
         dobInput.addEventListener('input', validateDOB);
         passwordInput.addEventListener('input', validatePasswordStrength);
         confirmPasswordInput.addEventListener('input', validatePasswordMatch);
+        termsCheckbox.addEventListener('change', checkFormValidity);
 
         function validateName() {
             if (nameInput.value.length < 5) {
@@ -136,30 +164,48 @@
 
         function validatePasswordStrength() {
             const password = passwordInput.value;
-            const strength = calculatePasswordStrength(password);
-            updateStrengthIndicator(strength);
-        }
+            let strength = 0;
+            if (password.length >= 6) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
 
-        function calculatePasswordStrength(password) {
-            if (/^(?=.*[!@#$%^&*(),.?":{}|<>])(?=.*[A-Z]).{8,}$/.test(password)) {
-                return 'Muy Fuerte';
-            } else if (password.length < 8) {
-                return 'Débil';
-            } else {
-                return 'Fuerte';
+            let strengthText = '';
+            switch (strength) {
+                case 0:
+                case 1:
+                    strengthLevel.style.width = "20%";
+                    strengthLevel.style.backgroundColor = "red";
+                    strengthText = 'Débil';
+                    break;
+                case 2:
+                    strengthLevel.style.width = "40%";
+                    strengthLevel.style.backgroundColor = "orange";
+                    strengthText = 'Débil';
+                    break;
+                case 3:
+                    strengthLevel.style.width = "60%";
+                    strengthLevel.style.backgroundColor = "yellow";
+                    strengthText = 'Media';
+                    break;
+                case 4:
+                    strengthLevel.style.width = "80%";
+                    strengthLevel.style.backgroundColor = "blue";
+                    strengthText = 'Fuerte';
+                    break;
+                case 5:
+                    strengthLevel.style.width = "100%";
+                    strengthLevel.style.backgroundColor = "green";
+                    strengthText = 'Muy Fuerte';
+                    break;
             }
-        }
-
-        function updateStrengthIndicator(strength) {
-            const strengthIndicator = document.getElementById('password-strength');
-            if (strength === 'Débil') {
-                strengthIndicator.style.color = 'red';
-            } else if (strength === 'Fuerte') {
-                strengthIndicator.style.color = 'orange';
+            strengthMessage.textContent = `Fortaleza de la contraseña: ${strengthText}`;
+            if (strength <= 2) {
+                strengthMessage.style.color = 'red';
             } else {
-                strengthIndicator.style.color = 'green';
+                strengthMessage.style.color = 'green';
             }
-            strengthIndicator.textContent = `Fortaleza de la contraseña: ${strength}`;
         }
 
         function validatePasswordMatch() {
@@ -174,11 +220,19 @@
         }
 
         function checkFormValidity() {
-            if (!nameError.classList.contains('hidden') || !emailError.classList.contains('hidden') || !phoneError.classList.contains('hidden') || !dobError.classList.contains('hidden') || !matchMessage.classList.contains('hidden')) {
+            if (!nameError.classList.contains('hidden') || !emailError.classList.contains('hidden') || !phoneError.classList.contains('hidden') || !dobError.classList.contains('hidden') || !matchMessage.classList.contains('hidden') || !termsCheckbox.checked) {
                 registerBtn.disabled = true;
             } else {
                 registerBtn.disabled = false;
             }
+        }
+
+        function openTermsModal() {
+            document.getElementById('terms-modal').style.display = 'flex';
+        }
+
+        function closeTermsModal() {
+            document.getElementById('terms-modal').style.display = 'none';
         }
     </script>
 </x-guest-layout>
