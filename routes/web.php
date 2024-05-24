@@ -51,3 +51,5 @@ Route::get('/dashboard', [PostController::class, 'index'])
     
     //Menu routes
     Route::get('menu', [MenuController::class, 'index'])->name('menu.index');
+
+    //role route

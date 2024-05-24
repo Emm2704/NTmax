@@ -18,7 +18,7 @@
             margin-right: 12px;
         }
     </style>
-
+    @if (Auth::user()->role == 'admin')
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-6">
@@ -28,6 +28,11 @@
                         <a href="{{ route('usuarios.index') }}">
                             <img src="{{ asset('src/users.png') }}" alt="Icono 1" class="icon"> Supervisión
                         </a>                        
+                    </li>
+                    <li class="list-group-item">
+                        <a href="#roles">
+                            <img src="{{ asset('src/rol.png') }}" alt="Icono 1" class="icon"> Roles
+                        </a>
                     </li>
                     <li class="list-group-item">
                         <a href="backup.php">
@@ -48,4 +53,12 @@
             </div>
         </div>
     </div>
+    @else
+    <div class="text-center">
+        <p class="mb-3">No tienes permiso para acceder a esta página.</p>
+        <div class="d-flex justify-content-center">
+            <img src="{{ asset('src/cat.jpg') }}" class="img-fluid" style="max-width: 37%;" alt="Cat Image">
+        </div>
+    </div>
+@endif
 </x-app-layout>
