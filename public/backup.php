@@ -15,9 +15,6 @@ $command = "mysqldump --host=$host --user=$username --password=$password $databa
 // Ejecutar el comando y capturar la salida
 $output = shell_exec($command);
 
-// Espera simulada de 10 segundos
-sleep(10);
-
 // Verificar si la copia de seguridad se realizó correctamente
 if ($output === null) {
     // Establecer las cabeceras para la descarga del archivo
@@ -34,5 +31,6 @@ if ($output === null) {
     exit;
 } else {
     // Si hubo un error al hacer la copia de seguridad, mostrar un mensaje de error
+    http_response_code(500);
     echo 'Error al hacer la copia de seguridad';
 }

@@ -17,6 +17,14 @@
             width: auto;
             margin-right: 12px;
         }
+
+        .progress-bar {
+            background-color: rgba(39, 186, 195, 255); /* Cambia este color al que desees */
+        }
+
+        #progressBarContainer {
+            display: none; /* Asegúrate de que el contenedor esté inicialmente oculto */
+        }
     </style>
     @if (Auth::user()->role == 'admin')
     <div class="container">
@@ -35,7 +43,7 @@
                         </a>
                     </li>
                     <li class="list-group-item">
-                        <a href="backup.php">
+                        <a href="#" id="backupLink">
                             <img src="{{ asset('src/respaldo.png') }}" alt="Icono 1" class="icon"> Realizar BackUp
                         </a>
                     </li>
@@ -50,6 +58,12 @@
                         </a>
                     </li>
                 </ul>
+                <div id="progressBarContainer">
+                    <div class="progress">
+                        <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <p>Realizando respaldo, por favor espere...</p>
+                </div>
             </div>
         </div>
     </div>
@@ -60,5 +74,55 @@
             <img src="{{ asset('src/cat.jpg') }}" class="img-fluid" style="max-width: 37%;" alt="Cat Image">
         </div>
     </div>
-@endif
+    @endif
+    <script>
+        document.getElementById('backupLink').addEventListener('click', function(event) {
+            event.preventDefault();
+            
+            if (!confirm('¿Estás seguro de que deseas realizar el respaldo?')) {
+                return;
+            }
+            
+            var progressBarContainer = document.getElementById('progressBarContainer');
+            var progressBar = document.getElementById('progressBar');
+
+            progressBarContainer.style.display = 'block';
+            progressBar.style.width = '0';
+
+            setTimeout(function() {
+                progressBar.style.width = '50%';
+            }, 1000);
+
+            setTimeout(function() {
+                progressBar.style.width = '100%';
+            }, 3000);
+
+            setTimeout(function() {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', 'backup.php', true);
+
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        var link = document.createElement('a');
+                        link.href = 'backup.php';
+                        link.download = 'backup_' + new Date().toISOString().slice(0, 19).replace(/:/g, "-") + '.sql';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        progressBarContainer.style.display = 'none';
+                    } else {
+                        alert('Error al hacer la copia de seguridad');
+                        progressBarContainer.style.display = 'none';
+                    }
+                };
+
+                xhr.onerror = function () {
+                    alert('Error de red');
+                    progressBarContainer.style.display = 'none';
+                };
+
+                xhr.send();
+            }, 4000);
+        });
+    </script>
 </x-app-layout>

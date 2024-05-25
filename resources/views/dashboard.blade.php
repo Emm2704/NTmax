@@ -28,7 +28,7 @@
                 <div style="position: relative; width: 100%; max-width: 600px;">
                     <img src="{{ asset('storage/' . $post->image) }}" class="card-img-top" alt="Post Image" style="width: 100%; height: auto;">
                     <div style="position: absolute; top: 0px; right: 0px; background-color: rgba(39, 186, 195, 255); padding: 10px 60px; border-top-left-radius: 0px; border-bottom-left-radius: 50px;">
-                        <h5 style="color: white; margin: 0; font-size: 18px;">{{ $post->user_name }}</h5>
+                        <h5 style="color: white; margin: 0; font-size: 18px;">{{ $post->user->name }}</h5>
                     </div>                
                 </div>
             @endif
@@ -43,19 +43,19 @@
             border-bottom-right-radius: 50px;">
             <p style="margin-top: 2%">
                 <!-- Botón para Me gusta -->
-                <button class="icon-button d-inline-block" onclick="mostrarAlerta()" style="width: auto; height: auto; padding: 0; border: none; background: none; margin-right:12px; margin-left:8%;">
+                <button class="icon-button d-inline-block" onclick="toggleLike({{ $post->id }})" style="width: auto; height: auto; padding: 0; border: none; background: none; margin-right:12px; margin-left:8%;">
                     <img src="{{ asset('src/like.png') }}" style="width: 30px; height: 30px; float: left; margin-right: 10px;" alt="">
-                    <span style="display: inline-block;">Me gusta</span>
+                    <span id="like-count-{{ $post->id }}" style="display: inline-block;">{{ $post->likes->count() }}</span> Me gusta
                 </button>
 
                 <!-- Botón para Comentar -->
-                <button class="icon-button d-inline-block" style="width: auto; height: auto; padding: 0; border: none; background: none; margin-right:12px;">
+                <button class="icon-button d-inline-block" onclick="commentPost({{ $post->id }})" style="width: auto; height: auto; padding: 0; border: none; background: none; margin-right:12px;">
                     <img src="{{ asset('src/coment.png') }}" style="width: 30px; height: 30px; float: left; margin-right: 10px;" alt="">
                     <span style="display: inline-block;">Comentar</span>
                 </button>
 
                 <!-- Botón para Guardar -->
-                <button class="icon-button d-inline-block" onclick="confirmarGuardar()" style="width: auto; height: auto; padding: 0; border: none; background: none; margin-right:12px;">
+                <button class="icon-button d-inline-block" onclick="savePost({{ $post->id }})" style="width: auto; height: auto; padding: 0; border: none; background: none; margin-right:12px;">
                     <img src="{{ asset('src/marcador.png') }}" style="width: 30px; height: 30px; float: left; margin-right: 10px;" alt="">
                     <span style="display: inline-block;">Guardar</span>
                 </button>
@@ -94,33 +94,95 @@
 </x-app-layout>
 
 <script>
-    function mostrarAlerta() {
-        Swal.fire({
-            icon: 'success',
-            title: '¡Me gusta!',
-            showConfirmButton: false,
-            timer: 1500
+    function toggleLike(postId) {
+        const likeCountElement = document.getElementById(`like-count-${postId}`);
+        
+        fetch(`/posts/${postId}/like`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json'
+            },
+        }).then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                likeCountElement.innerText = data.likeCount;
+                Swal.fire({
+                    icon: 'success',
+                    title: data.message,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
         });
     }
 
-    function confirmarGuardar() {
+    function commentPost(postId) {
         Swal.fire({
-            title: '¿Estás seguro?',
-            text: '¿Quieres guardar este post?',
-            icon: 'warning',
+            title: 'Agregar comentario',
+            input: 'text',
             showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Sí, guardar',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire(
-                    '¡Guardado!',
-                    'Tu post ha sido guardado correctamente.',
-                    'success'
-                );
+            confirmButtonText: 'Comentar',
+            showLoaderOnConfirm: true,
+            preConfirm: (content) => {
+                return fetch(`/posts/${postId}/comment`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ content: content })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(response.statusText)
+                    }
+                    return response.json()
+                })
+                .then(data => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                })
+                .catch(error => {
+                    Swal.showValidationMessage(
+                        `Request failed: ${error}`
+                    )
+                })
+            },
+            allowOutsideClick: () => !Swal.isLoading()
+        });
+    }
+
+    function savePost(postId) {
+        fetch(`/posts/${postId}/save`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json'
+            },
+        }).then(response => {
+            if (!response.ok) {
+                return response.json().then(error => { throw new Error(error.message); });
             }
+            return response.json();
+        }).then(data => {
+            Swal.fire({
+                icon: 'success',
+                title: data.message,
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }).catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.message,
+                showConfirmButton: true
+            });
         });
     }
 
@@ -168,12 +230,5 @@
             '',
             'success'
         );
-    }
-
-    function ocultarPublicacion(postId) {
-        var publicacion = document.getElementById('publicacion-' + postId);
-        if (publicacion) {
-            publicacion.style.display = 'none';
-        }
     }
 </script>

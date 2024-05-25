@@ -6,6 +6,10 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\MenuController;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\LikeController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\SavedPostController;
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -53,3 +57,18 @@ Route::get('/dashboard', [PostController::class, 'index'])
     Route::get('menu', [MenuController::class, 'index'])->name('menu.index');
 
     //role route
+
+
+    // acciones post routes
+
+
+    Route::post('/posts/{post}/like', [LikeController::class, 'like'])->name('posts.like');
+    Route::delete('/posts/{post}/unlike', [LikeController::class, 'unlike'])->name('posts.unlike');
+    Route::post('/posts/{post}/save', [SavedPostController::class, 'save'])->name('posts.save');
+
+    Route::post('/posts/{post}/comment', [CommentController::class, 'store'])->name('posts.comment');
+
+    Route::post('/posts/{post}/like', [LikeController::class, 'like'])->name('posts.like');
+    Route::delete('/posts/{post}/unlike', [LikeController::class, 'unlike'])->name('posts.unlike');
+
+    Route::get('/saved-posts', [SavedPostController::class, 'index'])->name('saved-posts.index');

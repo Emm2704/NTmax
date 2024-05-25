@@ -5,23 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Post extends Model
+class Comment extends Model
 {
     use HasFactory;
 
-     /**
-     * Get the user that owns the post.
-     */
+    protected $fillable = ['user_id', 'post_id', 'content'];
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    protected $table = 'posts';
-    protected $primaryKey = 'id';
-
-    public function likes()
+    public function post()
     {
-        return $this->hasMany(Like::class);
+        return $this->belongsTo(Post::class);
     }
 }
