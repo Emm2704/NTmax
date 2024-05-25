@@ -76,7 +76,7 @@
                         </a>                        
                     </li>
                     <li class="list-group-item">
-                        <a href="#roles">
+                        <a href="{{ route('saved.menu') }}">
                             <img src="{{ asset('src/marcador.png') }}" alt="Icono 1" class="icon"> Guardados
                         </a>
                     </li>
@@ -96,7 +96,7 @@
                         </a>
                     </li>
                     <li class="list-group-item">
-                        <a href="#actividad">
+                        <a href="{{ route('audios.index') }}">
                             <img src="{{ asset('src/auriculares.png') }}" alt="Icono 1" class="icon"> Audios
                         </a>
                     </li>

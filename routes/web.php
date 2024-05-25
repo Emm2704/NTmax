@@ -12,7 +12,11 @@ use App\Http\Controllers\SavedPostController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\BookController;
+
 use App\Http\Controllers\SavedBookController;
+use App\Http\Controllers\SavedAudioController;
+
+use App\Http\Controllers\AudioController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -100,3 +104,22 @@ Route::get('/dashboard', [PostController::class, 'index'])
     Route::get('/saved-books', [SavedBookController::class, 'index'])->name('saved-books.index');
     Route::post('/books/{book}/save', [SavedBookController::class, 'save'])->name('books.save');
     Route::delete('/books/{book}/unsave', [SavedBookController::class, 'destroy'])->name('books.unsave');
+
+    //audios routes
+
+    Route::resource('audios', AudioController::class);  
+    Route::post('/audios/{audio}/like', [AudioController::class, 'toggleLike'])->name('audios.like');
+    Route::get('/saved-audios', [SavedAudioController::class, 'index'])->name('saved-audios.index');
+    Route::post('/audios/{audio}/save', [SavedAudioController::class, 'save'])->name('audios.save');
+    Route::delete('/audios/{audio}/unsave', [SavedAudioController::class, 'unsave'])->name('audios.unsave');
+    Route::put('/audios/{audio}/inactivar', [AudioController::class, 'inactivar'])->name('audios.inactivar');
+    Route::put('/audios/{audio}/activar', [AudioController::class, 'activar'])->name('audios.activar');
+
+    // guardados
+    Route::get('/saved', function () {
+        return view('saved-menu');
+    })->name('saved.menu');
+    Route::get('/posts/mis-posts', [PostController::class, 'misPosts'])->name('posts.mis-posts');
+    Route::get('/audios/mis-audios', [AudioController::class, 'misAudios'])->name('saved-audios.index');
+
+    
