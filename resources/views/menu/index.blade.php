@@ -56,16 +56,6 @@
                             <img src="{{ asset('src/respaldo.png') }}" alt="Icono 1" class="icon"> Realizar BackUp
                         </a>
                     </li>
-                    {{-- <li class="list-group-item">
-                        <a href="#seguimiento">
-                            <img src="{{ asset('src/ver.png') }}" alt="Icono 1" class="icon"> Seguimiento
-                        </a>
-                    </li> --}}
-                    {{-- <li class="list-group-item">
-                        <a href="#actividad">
-                            <img src="{{ asset('src/crecimiento.png') }}" alt="Icono 1" class="icon"> Actividad de usuarios
-                        </a>
-                    </li> --}}
                     @endif
                     @endauth
 
@@ -103,6 +93,16 @@
                     <li class="list-group-item">
                         <a href="#actividad">
                             <img src="{{ asset('src/documento.png') }}" alt="Icono 1" class="icon"> Documentos
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="{{ route('helps.index') }}">
+                            <img src="{{ asset('src/help.png') }}" alt="Icono 1" class="icon"> Ayuda
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="{{ route('support_tickets.index') }}">
+                            <img src="{{ asset('src/soporte.png') }}" alt="Icono 1" class="icon"> Soporte
                         </a>
                     </li>
                 </ul>

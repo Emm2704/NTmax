@@ -18,6 +18,9 @@ use App\Http\Controllers\SavedAudioController;
 
 use App\Http\Controllers\AudioController;
 
+use App\Http\Controllers\HelpController;
+use App\Http\Controllers\SupportTicketController;
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -119,7 +122,11 @@ Route::get('/dashboard', [PostController::class, 'index'])
     Route::get('/saved', function () {
         return view('saved-menu');
     })->name('saved.menu');
-    Route::get('/posts/mis-posts', [PostController::class, 'misPosts'])->name('posts.mis-posts');
-    Route::get('/audios/mis-audios', [AudioController::class, 'misAudios'])->name('saved-audios.index');
+    Route::get('/mis-posts', [PostController::class, 'misPosts'])->name('posts.mis-posts');
 
-    
+    // Rutas para el módulo de Ayuda
+    Route::resource('helps', HelpController::class)->middleware('auth');
+
+    // Rutas para el módulo de Soporte al Usuario
+    Route::resource('helps', HelpController::class);
+    Route::resource('support_tickets', SupportTicketController::class);
