@@ -5,144 +5,127 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Post;
+use App\Models\Comment;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        // $posts = Post::orderBy('created_at', 'desc')->get();
-        // return view('dashboard', ['posts' => $posts]);
-
         $posts = Post::select('posts.*', 'users.name as user_name')
-        ->join('users', 'posts.user_id', '=', 'users.id')
-        ->where('posts.estado', 'activo') // Agrega esta condición para filtrar los posts activos
-        ->orderBy('posts.created_at', 'desc')
-        ->get();
+            ->join('users', 'posts.user_id', '=', 'users.id')
+            ->where('posts.estado', 'activo') 
+            ->orderBy('posts.created_at', 'desc')
+            ->get();
 
-    return view('dashboard', ['posts' => $posts]);
-
+        return view('dashboard', ['posts' => $posts]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('posts.new');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
-{
-    // Valida los datos del formulario
-    $validatedData = $request->validate([
-        'description' => 'required|string',
-        'image' => 'nullable|image|max:2048', // Ajusta el tamaño máximo de la imagen según tus necesidades
-    ]);
-
-    // Crea un nuevo post en la base de datos
-    $post = new Post();
-    $post->user_id = auth()->id(); // Asigna el ID del usuario actual
-    $post->description = $validatedData['description'];
-    
-    // Guarda la imagen si se ha subido
-    if ($request->hasFile('image')) {
-        $imagePath = $request->file('image')->store('images');
-        $post->image = $imagePath;
-    }
-
-    $post->save();
-
-    // Redirige al usuario al dashboard u otra página después de crear el post
-    return redirect()->route('dashboard')->with('success', 'Post creado correctamente.');
-}
-    
-
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
     {
-        //
+        $validatedData = $request->validate([
+            'description' => 'required|string',
+            'image' => 'nullable|image|max:2048',
+        ]);
+
+        $post = new Post();
+        $post->user_id = auth()->id();
+        $post->description = $validatedData['description'];
+        
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('images');
+            $post->image = $imagePath;
+        }
+
+        $post->save();
+
+        return redirect()->route('dashboard')->with('success', 'Post creado correctamente.');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+    public function show(Post $post)
+    {
+        $comments = $post->comments()->latest()->get();
+        return view('posts.show', compact('post', 'comments'));
+    }
+
+    public function comments(Post $post)
+    {
+        $comments = $post->comments()->latest()->get();
+        return view('posts.comments', compact('post', 'comments'));
+    }
+
+    public function addComment(Request $request, Post $post)
+    {
+        $request->validate([
+            'content' => 'required|string|max:255',
+        ]);
+
+        $comment = $post->comments()->create([
+            'content' => $request->content,
+            'user_id' => Auth::id(),
+        ]);
+
+        $comment->load('user');
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Comentario añadido correctamente',
+            'comment' => $comment,
+        ]);
+    }
+
     public function edit(string $id)
     {
-        //
+        // 
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
-        //
+        // 
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         $post = Post::find($id);
         $post->delete();
 
         $posts = Post::select('posts.*', 'users.name as user_name')
-        ->join('users', 'posts.user_id', '=', 'users.id')
-        ->where('posts.estado', 'activo') // Agrega esta condición para filtrar los posts activos
-        ->orderBy('posts.created_at', 'desc')
-        ->get();
+            ->join('users', 'posts.user_id', '=', 'users.id')
+            ->where('posts.estado', 'activo')
+            ->orderBy('posts.created_at', 'desc')
+            ->get();
 
-    return view('dashboard', ['posts' => $posts]);
+        return view('dashboard', ['posts' => $posts]);
     }
 
     public function showImage($id)
-{
-    $post = Post::findOrFail($id);
+    {
+        $post = Post::findOrFail($id);
 
-    // Verifica si el post tiene una imagen
-    if ($post->image) {
-        // Obtén el contenido de la imagen desde la base de datos
-        $imageContent = $post->image;
-
-        // Devuelve la imagen con el tipo de contenido adecuado
-        return response($imageContent)->header('Content-Type', 'image');
+        if ($post->image) {
+            $imageContent = $post->image;
+            return response($imageContent)->header('Content-Type', 'image');
+        }
     }
 
-    // Si el post no tiene imagen, devuelve una imagen de marcador de posición o un mensaje de error
-    // ...
+    public function misPosts()
+    {
+        $userId = auth()->id();
+        $posts = Post::join('users', 'posts.user_id', '=', 'users.id')
+            ->where('posts.user_id', $userId)
+            ->orderBy('posts.created_at', 'desc')
+            ->select('posts.*', 'users.name as user_name')
+            ->get();
 
-    
-}
+        return view('posts.mis-posts', compact('posts'));
+    }
 
-public function misPosts()
-{
-    // Recupera solo los posts del usuario actualmente autenticado
-    // $user = auth()->user();
-    // $posts = $user->posts()->orderBy('created_at', 'desc')->get();
-
-     // Recupera solo los posts del usuario actualmente autenticado con el nombre del usuario
-     $userId = auth()->id();
-     $posts = Post::join('users', 'posts.user_id', '=', 'users.id')
-                   ->where('posts.user_id', $userId)
-                   ->orderBy('posts.created_at', 'desc')
-                   ->select('posts.*', 'users.name as user_name')
-                   ->get();
- 
-    // Retorna la vista con los posts del usuario
-    return view('posts.mis-posts', compact('posts'));
-}
-
-public function inactivar(Post $post)
+    public function inactivar(Post $post)
     {
         $post->estado = 'Inactivo';
         $post->save();
@@ -155,5 +138,4 @@ public function inactivar(Post $post)
         $post->save();
         return redirect()->route('dashboard')->with('success', 'Post activado correctamente.');
     }
-
 }

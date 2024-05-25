@@ -2,17 +2,6 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <div class="container">
-        <x-slot name="header">
-            <div class="flex items-center">
-                <a href="{{ route('posts.create') }}" class="icon-button d-inline-block" style="width: 5%; height: auto; padding: 0; border: none; background: none; margin-right:12px;">
-                    <img src="{{ asset('src/publish.png') }}" style="width: 100%; height: 100%; float: left;" alt="">
-                </a>
-                <h2 class="font-semibold text-xl leading-tight" style="color:rgba(39, 186, 195, 255);">
-                    {{ __('Cuentanos que sientes 😊') }}
-                </h2>
-            </div>
-            
-        </x-slot>
         
 
         {{-- <div class="row">

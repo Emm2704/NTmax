@@ -23,13 +23,11 @@
                     <x-nav-link :href="route('saved-posts.index')" :active="request()->routeIs('saved-posts.index')">
                         {{ __('Mis Publicaciones Guardadas') }}
                     </x-nav-link>
-                    @auth
-                        @if(auth()->user()->role === 'admin')
+                    
                             <x-nav-link :href="route('menu.index')">
                                 {{ __('Menú') }}
                             </x-nav-link>
-                        @endif
-                    @endauth
+                       
                 </div>
             </div>
 
@@ -51,6 +49,14 @@
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Profile') }}
                         </x-dropdown-link>
+
+                        @auth
+                            @if(auth()->user()->role === 'admin')
+                                <x-dropdown-link :href="route('menu.index')">
+                                    {{ __('Menú') }}
+                                </x-dropdown-link>
+                            @endif
+                        @endauth
 
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
@@ -89,13 +95,11 @@
             <x-responsive-nav-link :href="route('saved-posts.index')" :active="request()->routeIs('saved-posts.index')">
                 {{ __('Mis Publicaciones Guardadas') }}
             </x-responsive-nav-link>
-            @auth
-                @if(auth()->user()->role === 'admin')
+            
                     <x-responsive-nav-link :href="route('menu.index')">
                         {{ __('Menú') }}
                     </x-responsive-nav-link>
-                @endif
-            @endauth
+                
         </div>
 
         <!-- Responsive Settings Options -->
@@ -109,6 +113,14 @@
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
+
+                @auth
+                    @if(auth()->user()->role === 'admin')
+                        <x-responsive-nav-link :href="route('menu.index')">
+                            {{ __('Menú') }}
+                        </x-responsive-nav-link>
+                    @endif
+                @endauth
 
                 <!-- Authentication -->
                 <form method="POST" action="{{ route('logout') }}">

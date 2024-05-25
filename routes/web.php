@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\SavedPostController;
+use App\Http\Controllers\CourseController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -72,3 +73,13 @@ Route::get('/dashboard', [PostController::class, 'index'])
     Route::delete('/posts/{post}/unlike', [LikeController::class, 'unlike'])->name('posts.unlike');
 
     Route::get('/saved-posts', [SavedPostController::class, 'index'])->name('saved-posts.index');
+
+    //Un solo post
+    Route::get('/dashboard/{post}', [PostController::class, 'show'])->name('posts.show');
+    Route::post('/posts/{post}/comment', [PostController::class, 'addComment'])->name('posts.addComment');
+    Route::get('/posts/{post}/comments', [PostController::class, 'comments'])->name('posts.comments');
+
+
+    // routes/web.php
+    Route::resource('courses', CourseController::class);
+    Route::post('courses/{id}/toggle-status', [CourseController::class, 'toggleStatus'])->name('courses.toggle-status');

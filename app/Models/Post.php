@@ -12,13 +12,19 @@ class Post extends Model
      /**
      * Get the user that owns the post.
      */
+    use HasFactory;
+
+    protected $fillable = ['description', 'image', 'user_id'];
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    protected $table = 'posts';
-    protected $primaryKey = 'id';
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
 
     public function likes()
     {

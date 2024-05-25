@@ -48,10 +48,11 @@
                     <span id="like-count-{{ $post->id }}" style="display: inline-block;">{{ $post->likes->count() }}</span> Me gusta
                 </button>
 
-                <!-- Botón para Comentar -->
-                <button class="icon-button d-inline-block" onclick="commentPost({{ $post->id }})" style="width: auto; height: auto; padding: 0; border: none; background: none; margin-right:12px;">
+                <!-- Botón para Comentarios -->
+                <!-- Botón para Comentarios -->
+                <button class="icon-button d-inline-block" onclick="window.location.href='{{ route('posts.comments', $post->id) }}'" style="width: auto; height: auto; padding: 0; border: none; background: none; margin-right:12px;">
                     <img src="{{ asset('src/coment.png') }}" style="width: 30px; height: 30px; float: left; margin-right: 10px;" alt="">
-                    <span style="display: inline-block;">Comentar</span>
+                    <span style="display: inline-block;">Comentarios</span>
                 </button>
 
                 <!-- Botón para Guardar -->
@@ -61,14 +62,15 @@
                 </button>
 
                 <!-- Botón para compartir -->
-                <button class="icon-button d-inline-block" onclick="mostrarCompartir()" style="width: auto; height: auto; padding: 0; border: none; background: none; margin-right:12px;">
+                <button class="icon-button d-inline-block" onclick="mostrarCompartir({{ $post->id }})" style="width: auto; height: auto; padding: 0; border: none; background: none; margin-right:12px;">
                     <img src="{{ asset('src/share.png') }}" style="width: 30px; height: 30px; float: left; margin-right: 10px;" alt="">
                     <span style="display: inline-block;">Compartir</span>
                 </button>
+
                 @if (Auth::user()->role == 'admin')
                 <div style="display: inline-block;">
                     <!-- Formulario para eliminar la publicación -->
-                    <form action="{{ route('posts.destroy', $post->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar esta publicación?');">
+                    <form action="{{ route('posts.destroy', $post->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar esta publicación?');" style="display: inline;">
                         @csrf
                         @method('DELETE')
                         <button class="icon-button d-inline-block" style="width: auto; height: auto; padding: 0; border: none; background: none; margin-right:12px;">
@@ -77,7 +79,7 @@
                         </button>
                     </form>
                     <!-- Formulario para ocultar la publicación -->
-                    <form action="{{ route('posts.inactivar', ['post' => $post->id]) }}" method='POST' style="display:inline-block">
+                    <form action="{{ route('posts.inactivar', ['post' => $post->id]) }}" method='POST' style="display:inline;">
                         @method('put')
                         @csrf
                         <button class="icon-button d-inline-block" style="width: auto; height: auto; padding: 0; border: none; background: none; margin-right:12px;">
@@ -117,46 +119,6 @@
         });
     }
 
-    function commentPost(postId) {
-        Swal.fire({
-            title: 'Agregar comentario',
-            input: 'text',
-            showCancelButton: true,
-            confirmButtonText: 'Comentar',
-            showLoaderOnConfirm: true,
-            preConfirm: (content) => {
-                return fetch(`/posts/${postId}/comment`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ content: content })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(response.statusText)
-                    }
-                    return response.json()
-                })
-                .then(data => {
-                    Swal.fire({
-                        icon: 'success',
-                        title: data.message,
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                })
-                .catch(error => {
-                    Swal.showValidationMessage(
-                        `Request failed: ${error}`
-                    )
-                })
-            },
-            allowOutsideClick: () => !Swal.isLoading()
-        });
-    }
-
     function savePost(postId) {
         fetch(`/posts/${postId}/save`, {
             method: 'POST',
@@ -186,25 +148,23 @@
         });
     }
 
-    function mostrarCompartir() {
-        Swal.fire({
-            title: 'Compartir en redes sociales',
-            html: `
-                <p>Haz clic en el icono de la red social en la que quieres compartir:</p>
-                <div style="display: flex; justify-content: space-around;">
-                    <a href="#" onclick="compartirFacebook()">
-                        <img src="{{ asset('src/facebook.png') }}" style="width: 30px; height: 30px;" alt="Facebook">
-                    </a>
-                    <a href="#" onclick="compartirTwitter()">
-                        <img src="{{ asset('src/twitter.png') }}" style="width: 30px; height: 30px;" alt="Twitter">
-                    </a>
-                    <a href="#" onclick="compartirLinkedIn()">
-                        <img src="{{ asset('src/instagram.png') }}" style="width: 30px; height: 30px;" alt="Instagram">
-                    </a>
-                </div>
-            `,
-            showCancelButton: false,
-            showConfirmButton: false
+    function mostrarCompartir(postId) {
+        const link = `http://127.0.0.1:8000/dashboard/${postId}`;
+        navigator.clipboard.writeText(link).then(() => {
+            Swal.fire({
+                icon: 'success',
+                title: 'Enlace copiado',
+                text: 'El enlace ha sido copiado al portapapeles: ' + link,
+                showConfirmButton: true,
+                confirmButtonText: 'OK'
+            });
+        }).catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se pudo copiar el enlace: ' + error,
+                showConfirmButton: true
+            });
         });
     }
 
