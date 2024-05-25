@@ -11,6 +11,8 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\SavedPostController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\BookController;
+use App\Http\Controllers\SavedBookController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -87,3 +89,14 @@ Route::get('/dashboard', [PostController::class, 'index'])
 
     //roles routes
     Route::resource('roles', RoleController::class);
+
+    //routes books
+    Route::resource('books', BookController::class);
+    Route::get('books/download/{book}', [BookController::class, 'download'])->name('books.download');
+
+    //saved books routes
+    
+
+    Route::get('/saved-books', [SavedBookController::class, 'index'])->name('saved-books.index');
+    Route::post('/books/{book}/save', [SavedBookController::class, 'save'])->name('books.save');
+    Route::delete('/books/{book}/unsave', [SavedBookController::class, 'destroy'])->name('books.unsave');

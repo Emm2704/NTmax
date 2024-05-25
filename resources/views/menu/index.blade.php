@@ -86,7 +86,7 @@
                         </a>
                     </li>
                     <li class="list-group-item">
-                        <a href="#seguimiento">
+                        <a href="{{ route('books.index') }}">
                             <img src="{{ asset('src/libro.png') }}" alt="Icono 1" class="icon"> Libros
                         </a>
                     </li>

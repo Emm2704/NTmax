@@ -16,6 +16,11 @@ class User extends Authenticatable
         return $this->hasMany(Post::class);
     }
 
+    public function savedBooks()
+    {
+        return $this->hasMany(SavedBook::class);
+    }
+
     /**
      * The attributes that are mass assignable.
      *
