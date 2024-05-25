@@ -47,7 +47,7 @@
                         </a>                        
                     </li>
                     <li class="list-group-item">
-                        <a href="#roles">
+                        <a href="{{ route('roles.index') }}">
                             <img src="{{ asset('src/rol.png') }}" alt="Icono 1" class="icon"> Roles
                         </a>
                     </li>
@@ -56,22 +56,22 @@
                             <img src="{{ asset('src/respaldo.png') }}" alt="Icono 1" class="icon"> Realizar BackUp
                         </a>
                     </li>
-                    <li class="list-group-item">
+                    {{-- <li class="list-group-item">
                         <a href="#seguimiento">
                             <img src="{{ asset('src/ver.png') }}" alt="Icono 1" class="icon"> Seguimiento
                         </a>
-                    </li>
-                    <li class="list-group-item">
+                    </li> --}}
+                    {{-- <li class="list-group-item">
                         <a href="#actividad">
                             <img src="{{ asset('src/crecimiento.png') }}" alt="Icono 1" class="icon"> Actividad de usuarios
                         </a>
-                    </li>
+                    </li> --}}
                     @endif
                     @endauth
 
                     {{-- Todos los usuarios --}}
                     <li class="list-group-item">
-                        <a href="{{ route('usuarios.index') }}">
+                        <a href="{{ route('courses.index') }}">
                             <img src="{{ asset('src/curso.png') }}" alt="Icono 1" class="icon"> Cursos
                         </a>                        
                     </li>

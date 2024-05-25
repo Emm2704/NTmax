@@ -10,6 +10,7 @@ use App\Http\Controllers\LikeController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\SavedPostController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\RoleController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -80,6 +81,9 @@ Route::get('/dashboard', [PostController::class, 'index'])
     Route::get('/posts/{post}/comments', [PostController::class, 'comments'])->name('posts.comments');
 
 
-    // routes/web.php
+    // routes cursos
     Route::resource('courses', CourseController::class);
-    Route::post('courses/{id}/toggle-status', [CourseController::class, 'toggleStatus'])->name('courses.toggle-status');
+    Route::post('courses/{course}/toggle-status', [CourseController::class, 'toggleStatus'])->name('courses.toggle-status');
+
+    //roles routes
+    Route::resource('roles', RoleController::class);
